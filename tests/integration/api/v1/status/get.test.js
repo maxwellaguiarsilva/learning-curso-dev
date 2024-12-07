@@ -7,8 +7,8 @@ test("/api/v1/status", async () => {
     updated_at: new Date(result.updated_at).toISOString(),
     dependences: {
       database: {
-        version: "17.2",
-        max_connections: 100,
+        version: result.dependences.database.version,
+        max_connections: parseInt(result.dependences.database.max_connections),
         opened_connections: parseInt(
           result.dependences.database.opened_connections,
         ),
