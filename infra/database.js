@@ -1,19 +1,19 @@
 import { Client } from "pg";
 
+function getSSLInfo() {
+  if (process.env.DATABASE_SSL_CA)
+    return {
+      rejectUnauthorized: true,
+      ca: process.env.DATABASE_SSL_CA,
+      key: process.env.DATABASE_SSL_KEY,
+      cert: process.env.DATABASE_SSL_CERT,
+    };
+  return process.env.DATABASE_USE_SSL ? true : false;
+}
+
 const connectionData = {
-  host: process.env.POSTGRES_HOST,
-  port: process.env.POSTGRES_PORT,
-  database: process.env.POSTGRES_DB,
-  user: process.env.POSTGRES_USER,
-  password: process.env.POSTGRES_PASSWORD,
-  ssl: process.env.POSTGRES_SSL_CA
-    ? {
-        rejectUnauthorized: true,
-        ca: process.env.POSTGRES_SSL_CA,
-        key: process.env.POSTGRES_SSL_KEY,
-        cert: process.env.POSTGRES_SSL_CERT,
-      }
-    : false,
+  connectionString: process.env.DATABASE_URL,
+  ssl: getSSLInfo(),
 };
 
 async function query(queryObject) {
