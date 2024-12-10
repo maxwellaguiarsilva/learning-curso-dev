@@ -1,8 +1,33 @@
+import cleanDatabase from "./clean-database";
+import { StatusCodes } from "http-status-codes";
+
+beforeAll(cleanDatabase);
+
+const fetchUrl = "http://localhost:3000/api/v1/migrations";
+const fetchParams = {
+  method: "POST",
+};
+
+async function hitMigrationEndPoint() {
+  const response = await fetch(fetchUrl, fetchParams);
+  const result = await response.json();
+  return {
+    responseStatus: response.status,
+    resultIsArray: Array.isArray(result),
+    hasZeroMigrations: result.length === 0,
+  };
+}
+
 test("/api/v1/migrations", async () => {
-  const response = await fetch("http://localhost:3000/api/v1/migrations", {
-    method: "POST",
+  expect(await hitMigrationEndPoint()).toEqual({
+    responseStatus: StatusCodes.CREATED,
+    resultIsArray: true,
+    hasZeroMigrations: false,
   });
 
-  const result = await response.json();
-  expect(Array.isArray(result)).toEqual(true);
+  expect(await hitMigrationEndPoint()).toEqual({
+    responseStatus: StatusCodes.OK,
+    resultIsArray: true,
+    hasZeroMigrations: true,
+  });
 });
