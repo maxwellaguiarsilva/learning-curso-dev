@@ -16,12 +16,18 @@ const connectionData = {
   ssl: getSSLInfo(),
 };
 
-async function query(queryObject) {
+async function getNewClient() {
   const client = new Client(connectionData);
-
   await client.connect();
+  return client;
+}
+
+async function query(queryObject) {
+  let client;
   let result;
+
   try {
+    client = await getNewClient(connectionData);
     result = await client.query(queryObject);
   } catch (error) {
     console.error("Error executing query:", error);
@@ -33,5 +39,6 @@ async function query(queryObject) {
 }
 
 export default {
-  query: query,
+  query,
+  getNewClient,
 };
