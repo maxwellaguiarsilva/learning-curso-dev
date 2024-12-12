@@ -1,10 +1,10 @@
 import migrationRunner from "node-pg-migrate";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { StatusCodes } from "http-status-codes";
 import database from "infra/database";
 
 const defaultMigrationRunner = {
-  dir: join("infra", "migrations"),
+  dir: resolve("infra", "migrations"),
   direction: "up",
   migrationsTable: "pgmigrations",
 };
