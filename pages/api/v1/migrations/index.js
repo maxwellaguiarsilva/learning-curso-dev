@@ -12,23 +12,39 @@ const defaultMigrationRunner = {
 export default async function (request, response) {
   const requestMethod = request.method.toUpperCase();
   if (!["GET", "POST"].includes(requestMethod)) {
-    return response.status(StatusCodes.METHOD_NOT_ALLOWED).end();
+    return response.status(StatusCodes.METHOD_NOT_ALLOWED).json({
+      error: `Method "${requestMethod}" not allowed!`,
+    });
   }
 
-  const client = await database.getNewClient();
-  const migrationRunnerParameters = {
-    ...defaultMigrationRunner,
-    dbClient: client,
-    dryRun: requestMethod === "GET",
-  };
+  let client;
+  try {
+    client = await database.getNewClient();
+    if (!client) {
+      throw new Error("Failed to obtain database client.");
+    }
 
-  const migrations = await migrationRunner(migrationRunnerParameters);
-  await client.end();
-  response
-    .status(
-      migrations.length > 0 && requestMethod === "POST"
-        ? StatusCodes.CREATED
-        : StatusCodes.OK,
-    )
-    .json(migrations);
+    const migrationRunnerParameters = {
+      ...defaultMigrationRunner,
+      dbClient: client,
+      dryRun: requestMethod === "GET",
+    };
+
+    const migrations = await migrationRunner(migrationRunnerParameters);
+
+    response
+      .status(requestMethod === "POST" ? StatusCodes.CREATED : StatusCodes.OK)
+      .json(migrations);
+  } catch (error) {
+    console.error("Failed to apply migrations:", error);
+    throw error;
+  } finally {
+    if (client) {
+      try {
+        await client.end();
+      } catch (clientEndError) {
+        console.error("Error closing database connection:", clientEndError);
+      }
+    }
+  }
 }

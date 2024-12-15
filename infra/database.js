@@ -27,12 +27,22 @@ async function query(queryObject) {
   let result;
 
   try {
-    client = await getNewClient(connectionData);
+    client = await getNewClient();
+    if (!client) {
+      throw new Error("Failed to obtain database client.");
+    }
     result = await client.query(queryObject);
   } catch (error) {
     console.error("Error executing query:", error);
+    throw error;
   } finally {
-    await client.end();
+    if (client) {
+      try {
+        await client.end();
+      } catch (clientEndError) {
+        console.error("Error closing database connection:", clientEndError);
+      }
+    }
   }
 
   return result;

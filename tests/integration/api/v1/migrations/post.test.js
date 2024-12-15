@@ -26,7 +26,7 @@ test("/api/v1/migrations", async () => {
   });
 
   expect(await hitMigrationEndPoint()).toEqual({
-    responseStatus: StatusCodes.OK,
+    responseStatus: StatusCodes.CREATED,
     resultIsArray: true,
     hasZeroMigrations: true,
   });
