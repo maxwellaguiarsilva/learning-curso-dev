@@ -1,7 +1,10 @@
-import cleanDatabase from "./clean-database";
+import orchestrator from "tests/orchestrator.js";
 import { StatusCodes } from "http-status-codes";
 
-beforeAll(cleanDatabase);
+beforeAll(async () => {
+  await orchestrator.waitForAllServices();
+  await orchestrator.clearDatabase();
+});
 
 const fetchUrl = "http://localhost:3000/api/v1/migrations";
 const fetchParams = {
