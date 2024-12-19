@@ -8,6 +8,8 @@ const SUCCESS_MESSAGE = "\nDatabase service: ✅\n";
 
 function checkDatabaseService() {
   exec(CHECK_COMMAND, handleReturn);
+
+  // eslint-disable-next-line no-unused-vars
   function handleReturn(error, stdout, stderr) {
     if (!stdout.includes(SUCCESS_TEXT)) {
       process.stdout.write(".");

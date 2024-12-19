@@ -1,5 +1,5 @@
 import migrationRunner from "node-pg-migrate";
-import { join, resolve } from "node:path";
+import { resolve } from "node:path";
 import { StatusCodes } from "http-status-codes";
 import database from "infra/database";
 
@@ -9,7 +9,7 @@ const defaultMigrationRunner = {
   migrationsTable: "pgmigrations",
 };
 
-export default async function (request, response) {
+export default async function migrations(request, response) {
   const requestMethod = request.method.toUpperCase();
   if (!["GET", "POST"].includes(requestMethod)) {
     return response.status(StatusCodes.METHOD_NOT_ALLOWED).json({

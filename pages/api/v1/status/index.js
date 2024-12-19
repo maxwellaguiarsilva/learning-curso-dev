@@ -9,7 +9,7 @@ async function queryFirstRow(queryObject) {
   return (await database.query(queryObject)).rows.pop();
 }
 
-export default async function (request, response) {
+export default async function status(request, response) {
   const version = (await queryFirstRow(queryVersion)).server_version;
   const maxConnections = parseInt(
     (await queryFirstRow(queryMaxConnections)).max_connections,
