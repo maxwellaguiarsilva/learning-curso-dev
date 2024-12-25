@@ -2,7 +2,7 @@ import database from "infra/database.js";
 import retry from "async-retry";
 import { StatusCodes } from "http-status-codes";
 
-const sqlCleanDatabase = "drop schema public cascade;create schema public;";
+const sqlClearDatabase = "drop schema public cascade;create schema public;";
 const urlFetchStatus = "http://localhost:3000/api/v1/status";
 const defaultRetryValues = {
   retries: 100,
@@ -26,7 +26,7 @@ async function waitForAllServices() {
 }
 
 async function clearDatabase() {
-  await database.query(sqlCleanDatabase);
+  await database.query(sqlClearDatabase);
 }
 
 const orchestrator = {
