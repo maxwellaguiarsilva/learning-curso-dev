@@ -39,12 +39,10 @@ export default async function migrations(request, response) {
     console.error("Failed to apply migrations:", error);
     throw error;
   } finally {
-    if (client) {
-      try {
-        await client.end();
-      } catch (clientEndError) {
-        console.error("Error closing database connection:", clientEndError);
-      }
+    try {
+      await client?.end();
+    } catch (clientEndError) {
+      console.error("Error closing database connection:", clientEndError);
     }
   }
 }
