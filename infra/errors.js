@@ -1,17 +1,12 @@
 import { StatusCodes } from "http-status-codes";
 
-function createSelectiveCopy(source, publicList) {
-  if (typeof source !== "object" || source === null) {
-    return {};
-  }
-  if (!Array.isArray(publicList)) {
-    return {};
-  }
-
-  return publicList.reduce((acc, key) => {
-    acc[key] = source[key];
-    return acc;
-  }, {});
+function getErrorJson(error) {
+  return {
+    name: error.name,
+    message: error.message,
+    action: error.action,
+    status_code: error.statusCode,
+  };
 }
 
 export class InternalServerError extends Error {
@@ -19,10 +14,36 @@ export class InternalServerError extends Error {
     super("unexpected internal server error", { cause });
     this.name = "InternalServerError";
     this.action = "contact support";
-    this.status_code = StatusCodes.INTERNAL_SERVER_ERROR;
+    this.statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
   }
 
   toJSON() {
-    return createSelectiveCopy(this, ["name", "action", "status_code"]);
+    return getErrorJson(this);
+  }
+}
+
+export class ServiceError extends Error {
+  constructor({ cause }) {
+    super("service unavailable", { cause });
+    this.name = "ServiceError";
+    this.action = "check if the service is available";
+    this.statusCode = StatusCodes.SERVICE_UNAVAILABLE;
+  }
+
+  toJSON() {
+    return getErrorJson(this);
+  }
+}
+
+export class MethodNotAllowed extends Error {
+  constructor({ cause }) {
+    super("method not allowed for this endpoint", { cause });
+    this.name = "MethodNotAllowed";
+    this.action = "check if the HTTP method sent is valid for this endpoint";
+    this.statusCode = StatusCodes.METHOD_NOT_ALLOWED;
+  }
+
+  toJSON() {
+    return getErrorJson(this);
   }
 }
